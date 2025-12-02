@@ -11,13 +11,32 @@ def read_excel_file_V0(data:sqlite3.Connection, file):
     cursor = data.cursor()
     for ix, row in df_sportifs.iterrows():
         try:
-            query = "insert into V0_LesSportifsEQ values ({},'{}','{}','{}','{}','{}',{})".format(
-                row['numSp'], row['nomSp'], row['prenomSp'], row['pays'], row['categorieSp'], row['dateNaisSp'], row['numEq'])
+            query = "insert into V0_LesSportifsEQ values ({},'{}','{}','{}','{}','{}')".format(
+                row['numSp'], row['nomSp'], row['prenomSp'], row['pays'], row['categorieSp'], row['dateNaisSp'])
             # On affiche la requête pour comprendre la construction. A enlever une fois compris.
             print(query)
             cursor.execute(query)
         except IntegrityError as err:
             print(err)
+        
+        if row['numEq'] != 'null':
+            try:
+                query = "insert into LesParticipantsEq values ('{}','{}')".format(
+                    row['numSp'], row['numEq'])
+                # On affiche la requête pour comprendre la construction. A enlever une fois compris.
+                print(query)
+                cursor.execute(query)
+            except IntegrityError as err:
+                print(err)
+        else:
+            try:
+                query = "insert into LesParticipantsIndi values ('{}')".format(
+                    row['numSp'])
+                # On affiche la requête pour comprendre la construction. A enlever une fois compris.
+                print(query)
+                cursor.execute(query)
+            except IntegrityError as err:
+                print(err)
 
     # Lecture de l'onglet LesEpreuves du fichier excel, en interprétant toutes les colonnes comme des string
     # pour construire uniformement la requête
@@ -39,3 +58,68 @@ def read_excel_file_V0(data:sqlite3.Connection, file):
             cursor.execute(query)
         except IntegrityError as err:
             print(f"{err} : \n{row}")
+            
+            
+    df_inscriptions = pandas.read_excel(file, sheet_name='LesInscriptions', dtype=str)
+    df_inscriptions = df_inscriptions.where(pandas.notnull(df_inscriptions), 'null')
+
+    cursor = data.cursor()
+    for ix, row in df_inscriptions.iterrows():
+        if len(row['numIn']) < 3:
+            try:
+                query = "insert into ParticiperAEq values ({},{},'null')".format(
+                    row['numIn'], row['numEp'], 'null')
+                # On affiche la requête pour comprendre la construction. A enlever une fois compris.
+                print(query)
+                cursor.execute(query)
+            except IntegrityError as err:
+                print(f"{err} : \n{row}")
+        else: 
+            try:
+                query = "insert into ParticiperAIndi values ({},{},'null')".format(
+                    row['numIn'], row['numEp'], 'null')
+                # On affiche la requête pour comprendre la construction. A enlever une fois compris.
+                print(query)
+                cursor.execute(query)
+            except IntegrityError as err:
+                print(f"{err} : \n{row}")
+
+            
+    df_medailles = pandas.read_excel(file, sheet_name='LesResultats', dtype=str)
+    df_medailles = df_medailles.where(pandas.notnull(df_medailles), 'null')
+
+    cursor = data.cursor()
+    for ix, row in df_medailles.iterrows():
+        if len(row['gold']) < 3:
+            try:
+                query = "update ParticiperAEq set Medaille = 'gold' WHERE numEp = {} AND numEq = {}".format(
+                    row['numEp'],row['gold'])
+                print(query)
+                cursor.execute(query)
+                query = "update ParticiperAEq set Medaille = 'silver' WHERE numEp = {} AND numEq = {}".format(
+                    row['numEp'],row['silver'])
+                print(query)
+                cursor.execute(query)
+                query = "update ParticiperAEq set Medaille = 'bronze' WHERE numEp = {} AND numEq = {}".format(
+                    row['numEp'],row['bronze'])
+                print(query)
+                cursor.execute(query)
+            except IntegrityError as err:
+                print(f"{err} : \n{row}")
+        else:
+            try:
+                query = "update ParticiperAIndi set Medaille = 'gold' WHERE numEp = {} AND numSp = {}".format(
+                    row['numEp'],row['gold'])
+                print(query)
+                cursor.execute(query)
+                query = "update ParticiperAIndi set Medaille = 'silver' WHERE numEp = {} AND numSp = {}".format(
+                    row['numEp'],row['silver'])
+                print(query)
+                cursor.execute(query)
+                query = "update ParticiperAIndi set Medaille = 'bronze' WHERE numEp = {} AND numSp = {}".format(
+                    row['numEp'],row['bronze'])
+                print(query)
+                cursor.execute(query)
+            except IntegrityError as err:
+                print(f"{err} : \n{row}")
+            
