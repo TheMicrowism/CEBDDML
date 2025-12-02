@@ -58,7 +58,7 @@ On va maintenant modifier le schema obtenu a la question precedante pour complet
 - **LesEpreuves** (<u>numEp</u>, nomEp, formeEp, categorieEp, nbSportifsEp, dateEp, nomDi)  
 - **LesSportifs** (<u>numSP</u>, nomSp, prenomSp, pays, categorieSp, dateNaisSp)
 - **LesParticipantsIndi**(<u>numSp</u>)
-- **LesParticipantsEq**(<u>numSp, numEq</u>)
+- **LesParticipantsEq**(<u>numSp</u>, numEq)
 - **ParticiperAIndi**(<u>numSp, numEp</u>, medaille)
 - **ParticiperAEq**(<u>numEq, numEp</u>, medaille)
 
