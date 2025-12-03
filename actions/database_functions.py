@@ -42,3 +42,29 @@ def database_delete(data):
     else:
         # Si tout s'est bien passé, on affiche le message de succès (le commit est automatique pour un DROP TABLE)
         print("La base de données a été supprimée avec succès.")
+
+def database_view(data):
+    print("\nCréation des vues")
+    try:
+        # On exécute les requêtes du fichier de création
+        db.updateDBfile(data, "data/viewDB.sql",)
+    except Exception as e:
+        # En cas d'erreur, on affiche un message
+        print("L'erreur suivante s'est produite pendant lors de la création des vues : " + repr(e) + ".")
+    else:
+        # Si tout s'est bien passé, on affiche le message de succès et on commit
+        print("Les vues ont été créées avec succès.")
+        data.commit()
+        
+def database_triggers(data):
+    print("\nCréation des triggers")
+    try:
+        # On exécute les requêtes du fichier de création
+        db.updateDBfile(data, "data/triggersDB.sql",True)
+    except Exception as e:
+        # En cas d'erreur, on affiche un message
+        print("L'erreur suivante s'est produite pendant lors de la création des triggers : " + repr(e) + ".")
+    else:
+        # Si tout s'est bien passé, on affiche le message de succès et on commit
+        print("Les triggers ont été créés avec succès.")
+        data.commit()

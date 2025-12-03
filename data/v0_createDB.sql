@@ -1,4 +1,6 @@
-CREATE TABLE V0_LesSportifsEQ
+PRAGMA foreign_keys=on;
+
+CREATE TABLE IF NOT EXISTS V0_LesSportifsEQ
 (
   numSp NUMBER(4) PRIMARY KEY,
   nomSp VARCHAR2(20),
@@ -10,7 +12,7 @@ CREATE TABLE V0_LesSportifsEQ
   CONSTRAINT SP_CK2 CHECK(categorieSp IN ('feminin','masculin'))
 );
 
-CREATE TABLE V0_LesEpreuves
+CREATE TABLE IF NOT EXISTS V0_LesEpreuves
 (
   numEp NUMBER(3),
   nomEp VARCHAR2(20),
@@ -26,36 +28,37 @@ CREATE TABLE V0_LesEpreuves
   CONSTRAINT EP_CK4 CHECK (nbSportifsEp > 0)
 );
 
-CREATE TABLE LesParticipantsIndi
+CREATE TABLE IF NOT EXISTS LesParticipantsEq
 (
-  numSp NUMBER(4),
-  FOREIGN KEY(numSp) REFERENCES V0_LesSportifsEQ(numSp)
-);
-
-CREATE TABLE LesParticipantsEq
-(
-  numSp NUMBER(4),
-  numEq NUMBER(4) NOT NULL,
-  FOREIGN KEY(numSp) REFERENCES V0_LesSportifsEQ(numSp),
+  numEq NUMBER(4) PRIMARY KEY,
   CONSTRAINT LPE_CK1 CHECK(numEq > 0)
 );
 
-CREATE TABLE ParticiperAIndi
+CREATE TABLE IF NOT EXISTS RepartitionEq
+(
+  numSp NUMBER(4),
+  numEq NUMBER(4),
+  FOREIGN KEY(numSp) REFERENCES V0_LesSportifsEQ(numSp),
+  FOREIGN KEY(numEq) REFERENCES LesParticipantsEq(numEq) ON DELETE CASCADE,
+  CONSTRAINT LPE_CK1 CHECK(numEq > 0)
+);
+
+CREATE TABLE IF NOT EXISTS ParticiperAIndi
 (
   numSp NUMBER(4),
   numEp NUMBER(3),
   medaille VARCHAR2(7),
   CONSTRAINT PAI_CK1 CHECK (medaille IN ('gold', 'silver','bronze','null')),
-  FOREIGN KEY(numSp) REFERENCES LesParticipantsIndi(numSp),
-  FOREIGN KEY(numEp) REFERENCES V0_LesEpreuves(numEp)
+  FOREIGN KEY(numSp) REFERENCES V0_LesSportifsEQ(numSp) ON DELETE CASCADE,
+  FOREIGN KEY(numEp) REFERENCES V0_LesEpreuves(numEp) ON DELETE CASCADE
 );
 
-CREATE TABLE ParticiperAEq
+CREATE TABLE IF NOT EXISTS ParticiperAEq
 (
   numEq NUMBER(4),
   numEp NUMBER(3),
   medaille VARCHAR2(7),
-  CONSTRAINT PAI_CK1 CHECK (medaille IN ('gold', 'silver','bronze','null')),
-  FOREIGN KEY(numEq) REFERENCES LesParticipantsEq(numEq),
-  FOREIGN KEY(numEp) REFERENCES V0_LesEpreuves(numEp)
-);
+  CONSTRAINT PAE_CK1 CHECK (medaille IN ('gold', 'silver','bronze','null')),
+  FOREIGN KEY(numEq) REFERENCES LesParticipantsEq(numEq) ON DELETE CASCADE,
+  FOREIGN KEY(numEp) REFERENCES V0_LesEpreuves(numEp) ON DELETE CASCADE
+); 

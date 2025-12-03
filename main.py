@@ -16,6 +16,8 @@ actions = {
     "2": lambda: database_functions.database_insert(data),
     "3": lambda: database_functions.database_delete(data),
     "4": lambda: database_queries.liste_epreuves(data, "Ski alpin"),
+    "5": lambda: database_functions.database_view(data),
+    "6": lambda: database_functions.database_triggers(data),
     "q": quitter
 }
 
@@ -26,6 +28,8 @@ def menu():
     print("2 - Insérer les données du fichier Excel")
     print("3 - Supprimer la base de données")
     print("4 - Liste des épreuves de ski alpin")
+    print("5 - Réinitialiser les vues")
+    print("6 - Réinitialiser les triggers")
     print("q - Quitter")
 
 # Fonction principale

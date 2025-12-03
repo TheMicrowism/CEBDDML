@@ -21,20 +21,17 @@ def read_excel_file_V0(data:sqlite3.Connection, file):
         
         if row['numEq'] != 'null':
             try:
-                query = "insert into LesParticipantsEq values ('{}','{}')".format(
+                query = "insert or ignore into LesParticipantsEq values ('{}')".format(
+                    row['numEq'])
+                # On affiche la requête pour comprendre la construction. A enlever une fois compris.
+                print(query)
+                cursor.execute(query)
+                query = "insert into RepartitionEq values ('{}','{}')".format(
                     row['numSp'], row['numEq'])
                 # On affiche la requête pour comprendre la construction. A enlever une fois compris.
                 print(query)
                 cursor.execute(query)
-            except IntegrityError as err:
-                print(err)
-        else:
-            try:
-                query = "insert into LesParticipantsIndi values ('{}')".format(
-                    row['numSp'])
-                # On affiche la requête pour comprendre la construction. A enlever une fois compris.
-                print(query)
-                cursor.execute(query)
+               
             except IntegrityError as err:
                 print(err)
 
