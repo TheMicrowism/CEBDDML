@@ -56,13 +56,15 @@ def read_excel_file_V0(data:sqlite3.Connection, file):
         except IntegrityError as err:
             print(f"{err} : \n{row}")
             
-            
+    #Inserer les inscriptions dans les tables ParticiperAEq et ParticiperAIndi, en mettant 'null' comme medaille.            
     df_inscriptions = pandas.read_excel(file, sheet_name='LesInscriptions', dtype=str)
     df_inscriptions = df_inscriptions.where(pandas.notnull(df_inscriptions), 'null')
 
     cursor = data.cursor()
     for ix, row in df_inscriptions.iterrows():
-        if len(row['numIn']) < 3:
+        #Voir si l'Inscription est d'une equipe ou un sportif individuel
+        
+        if len(row['numIn']) < 3:   #Cas equipe
             try:
                 query = "insert into ParticiperAEq values ({},{},'null')".format(
                     row['numIn'], row['numEp'], 'null')
@@ -71,7 +73,7 @@ def read_excel_file_V0(data:sqlite3.Connection, file):
                 cursor.execute(query)
             except IntegrityError as err:
                 print(f"{err} : \n{row}")
-        else: 
+        else:                   #Cas Individuelle
             try:
                 query = "insert into ParticiperAIndi values ({},{},'null')".format(
                     row['numIn'], row['numEp'], 'null')
@@ -81,13 +83,14 @@ def read_excel_file_V0(data:sqlite3.Connection, file):
             except IntegrityError as err:
                 print(f"{err} : \n{row}")
 
-            
+    
+    #Insertion des medailles
     df_medailles = pandas.read_excel(file, sheet_name='LesResultats', dtype=str)
     df_medailles = df_medailles.where(pandas.notnull(df_medailles), 'null')
 
     cursor = data.cursor()
     for ix, row in df_medailles.iterrows():
-        if len(row['gold']) < 3:
+        if len(row['gold']) < 3:    #Cas Equipe
             try:
                 query = "update ParticiperAEq set Medaille = 'gold' WHERE numEp = {} AND numEq = {}".format(
                     row['numEp'],row['gold'])
@@ -103,7 +106,7 @@ def read_excel_file_V0(data:sqlite3.Connection, file):
                 cursor.execute(query)
             except IntegrityError as err:
                 print(f"{err} : \n{row}")
-        else:
+        else:                   #Cas Individuelle
             try:
                 query = "update ParticiperAIndi set Medaille = 'gold' WHERE numEp = {} AND numSp = {}".format(
                     row['numEp'],row['gold'])
